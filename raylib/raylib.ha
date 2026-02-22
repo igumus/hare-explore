@@ -26,8 +26,6 @@ export fn init_window(width: size, height: size, title: str) void = {
 
 export @symbol("WindowShouldClose") fn window_should_close() bool;
 export @symbol("CloseWindow") fn close_window() void;
-export @symbol("GetColor") fn get_color(color: int) Color;
-export @symbol("ClearBackground") fn clear_background(color: Color) void;
 export @symbol("IsKeyPressed") fn is_key_pressed(key: int) bool;
 export @symbol("IsKeyDown") fn is_key_down(key: int) bool;
 export @symbol("GetFrameTime") fn get_frame_time() f32;
@@ -35,6 +33,15 @@ export @symbol("GetFrameTime") fn get_frame_time() f32;
 // NOTE: Drawing Functions
 export @symbol("BeginDrawing") fn begin_drawing() void;
 export @symbol("EndDrawing") fn end_drawing() void;
+
+// NOTE: Blending modes
+export @symbol("BeginBlendMode") fn begin_blending_mode(mode: int) void;
+export @symbol("EndBlendMode") fn end_blending_mode() void;
+
+// NOTE: Color operations
+export @symbol("GetColor") fn get_color(color: int) Color;
+export @symbol("ClearBackground") fn clear_background(color: Color) void;
+export @symbol("ColorFromHSV") fn color_from_hsv(h: f32, s: f32, v: f32) Color;
 
 export @symbol("DrawCircle") fn draw_circle(cx: int, cy: int, r: f32, c: Color) void;
 export @symbol("DrawRectangle") fn draw_rectangle(x: int, y: int, w: int, h: int, c: Color) void;
