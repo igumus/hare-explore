@@ -69,9 +69,7 @@ let bar: Bar = Bar{...};
 type Target = struct {
 	rect: Rectangle,
 	dead: bool,
-	h: f32,
-	s: f32,
-	v: f32
+	hsv: Vec3
 };
 
 type Projectile = struct {
@@ -187,7 +185,7 @@ fn target_hit(state: *game_state, targetIndex: int) void = {
 	let target = &targets[targetIndex];
 	if (target.dead) return;
 	target.dead=true;
-	let color = color_from_hsv(target.h, target.s, target.v);
+	let color = color_from_hsv_vector(target.hsv);
 	particle_emitter_emit(proj.rect.x + PROJ_SIZE / 2.0, proj.rect.y + PROJ_SIZE / 2.0, PARTICLE_EMITTER_LIFETIME, color);
 	state.dead_target_count = state.dead_target_count + 1;
 	state.score += 1;
@@ -273,7 +271,7 @@ fn handle_projectile_collision(state: *game_state, collision: Collision) void = 
 
 	let halfProjSize = PROJ_SIZE / 2.0;
 	if (collision == Collision::BAR) {
-		particle_emitter_emit(bar.rect.x + halfProjSize, bar.rect.y + halfProjSize, PARTICLE_EMITTER_LIFETIME, BAR_COLOR);
+		particle_emitter_emit(proj.rect.x + halfProjSize, proj.rect.y + halfProjSize, PARTICLE_EMITTER_LIFETIME, BAR_COLOR);
 	} else {
 		let target_index =(collision: int) - (Collision::TARGET: int);
 		target_hit(state, target_index);
@@ -314,7 +312,7 @@ fn render_particles() void = {
 fn render_targets() void = {
 	for (let target &.. targets) {
 		if (!target.dead) {
-			let color = color_from_hsv(target.h, target.s, target.v);
+			let color = color_from_hsv_vector(target.hsv);
 			draw_rectangle_rec(target.rect,  color);
 		};
 	};
@@ -375,9 +373,9 @@ fn init_targets() void = {
 		target.rect.w = TARGET_WIDTH;
 		target.rect.h = TARGET_HEIGHT;
 		target.dead = false;
-		target.h = rowIndex * 30.0;
-		target.s = 0.9;
-		target.v = 0.8;
+		target.hsv.x = rowIndex * 30.0;
+		target.hsv.y = 0.9;
+		target.hsv.z = 0.8;
 		index += 1;
 	};
 };
