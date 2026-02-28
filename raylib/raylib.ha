@@ -25,10 +25,13 @@ export type Rectangle = struct {
 	h: f32
 };
 
-@symbol("InitWindow") fn InitWindow(width: size, height: size, title: const *c::char) void;
+@symbol("InitWindow") fn internal_init_window(width: size, height: size, title: const *c::char) void;
 export fn init_window(width: size, height: size, title: str) void = {
-	InitWindow(width, height, c::fromstr(title)!);
+	internal_init_window(width, height, c::fromstr(title)!);
 };
+
+@symbol("GetScreenWidth") fn internal_get_screen_width() size;
+@symbol("GetScreenHeight") fn internal_get_screen_height() size;
 
 export @symbol("WindowShouldClose") fn window_should_close() bool;
 export @symbol("CloseWindow") fn close_window() void;
@@ -50,7 +53,7 @@ export @symbol("GetColor") fn get_color(color: int) Color;
 export @symbol("ClearBackground") fn clear_background(color: Color) void;
 export @symbol("ColorFromHSV") fn color_from_hsv(h: f32, s: f32, v: f32) Color;
 export fn color_from_hsv_vector(in: Vec3) Color = {
-	return color_from_hsv(in.x, in.y, in.z); 
+	return color_from_hsv(in.x, in.y, in.z);
 };
 
 export @symbol("DrawCircle") fn draw_circle(cx: int, cy: int, r: f32, c: Color) void;
@@ -64,8 +67,28 @@ export @symbol("CheckCollisionRecs") fn check_collision_recs(rec1: Rectangle, re
 // NOTE: Text Utilities
 export @symbol("DrawFPS") fn draw_fps(x: int, y: int) void;
 
+def DEFAULT_TEXT_COLOR = Color { r= 229,  g= 229, b= 229, a= 255 };
+
 @symbol("DrawText") fn DrawText(text: const *c::char, x: size, y: size, font_size: size, color: Color) void;
 export fn draw_text(text: str, posX: size, posY: size, font_size: size, color: Color) void = {
 	DrawText(c::fromstr(text)!, posX, posY, font_size, color);
 };
 
+@symbol("MeasureText") fn internal_measure_text(text: const *c::char, fontSize: size) size;
+export fn measure_text(text: str, font_size: size) size = {
+	return internal_measure_text(c::fromstr(text)!,  font_size);
+};
+
+export fn draw_text_at_center(text: str, font_size: size) void = {
+	draw_colored_text_at_center(text, font_size, DEFAULT_TEXT_COLOR);
+};
+
+fn draw_colored_text_at_center(text: str, font_size: size, color: Color) void = {
+	const half_window_width  = (internal_get_screen_width():f32  * 0.5):size;
+	const half_window_height = (internal_get_screen_height():f32 * 0.5):size;
+	const text_width = measure_text(text, font_size): f32;
+	const half_text_width = (text_width * 0.5):size;
+	const text_x = half_window_width - half_text_width;
+	const text_y = half_window_height;
+	draw_text(text, text_x, text_y, font_size, color);
+};
