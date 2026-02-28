@@ -35,6 +35,7 @@ export @symbol("CloseWindow") fn close_window() void;
 export @symbol("IsKeyPressed") fn is_key_pressed(key: int) bool;
 export @symbol("IsKeyDown") fn is_key_down(key: int) bool;
 export @symbol("GetFrameTime") fn get_frame_time() f32;
+export @symbol("GetTime") fn get_time() f64;
 
 // NOTE: Drawing Functions
 export @symbol("BeginDrawing") fn begin_drawing() void;
