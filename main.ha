@@ -44,6 +44,7 @@ def TARGET_WIDTH: f32   = 100.0;
 def TARGET_HEIGHT: f32  = 20.0;
 def TARGET_PADDING_X: f32 = 20.0;
 def TARGET_PADDING_Y: f32 = 20.0;
+def TARGET_RIGIDITY_FACTOR: f32 = 80.0;
 
 // NOTE: Score section Constants
 def SCORE_PADDING_LEFT : int   = 40;
@@ -65,10 +66,27 @@ let particles: [PARTICLE_CAPACITY]Particle = [Particle{...}...];
 let particleEmitters: [PARTICLE_EMITTER_CAPACITY]ParticleEmitter = [ParticleEmitter{...}...];
 let targets: [TARGET_CAPACITY]Target = [Target{...}...];
 
+type Target_Rigidity = enum {
+	STANDART,
+	MEDIUM,
+	HARD,
+	EXTRA,
+
+	MAX_RIGIDITY
+};
+
+fn random_target_rigidity() Target_Rigidity = {
+	const now = now(clock::MONOTONIC);
+	const rnd = random::init(now.nsec: u64);
+	const next = random::u32n(&rnd, Target_Rigidity::MAX_RIGIDITY:u32):int;
+	return next:Target_Rigidity;
+};
+
 type Target = struct {
 	rect: Rectangle,
 	dead: bool,
-	hsv: Vec3
+	color: Color,
+	rigidity: Target_Rigidity
 };
 
 type Projectile = struct {
@@ -199,11 +217,16 @@ fn update_particles(game: *Game, dt: f32) void = {
 fn target_hit(game: *Game, targetIndex: int) void = {
 	let target = &targets[targetIndex];
 	if (target.dead) return;
-	target.dead=true;
-	let color = color_from_hsv_vector(target.hsv);
-	particle_emitter_emit(game.projectile.rect.x + PROJ_SIZE / 2.0, game.projectile.rect.y + PROJ_SIZE / 2.0, PARTICLE_EMITTER_LIFETIME, color);
-	game.dead_target_count = game.dead_target_count + 1;
-	game.score += 1;
+	const rigidity = target.rigidity:int;
+	if (rigidity > 0) {
+		target.rigidity = (rigidity - 1):Target_Rigidity;
+		target.color.a = (255.0 - (TARGET_RIGIDITY_FACTOR * (target.rigidity:int):f32)):u8;
+	} else {
+		target.dead=true;
+		game.dead_target_count = game.dead_target_count + 1;
+		game.score += 1;
+		particle_emitter_emit(game.projectile.rect.x + PROJ_SIZE / 2.0, game.projectile.rect.y + PROJ_SIZE / 2.0, PARTICLE_EMITTER_LIFETIME, target.color);
+	};
 };
 
 fn target_collision(rect: *Rectangle) Collision = {
@@ -291,10 +314,7 @@ fn vert_collision(game: *Game, rect: *Rectangle, vel: *Vec2, speed: f32, dt: f32
 
 fn handle_projectile_collision(game: *Game, collision: Collision) void = {
 	switch(collision) {
-	case Collision::NONE => return;
-	case Collision::BORDER_LEFT => return;
-	case Collision::BORDER_RIGHT => return;
-	case Collision::BORDER_TOP => return;
+	case Collision::NONE, Collision::BORDER_LEFT, Collision::BORDER_RIGHT, Collision::BORDER_TOP => return;
 	case Collision::BORDER_BOTTOM =>
 		let halfProjSize = PROJ_SIZE;
 		particle_emitter_emit(game.projectile.rect.x + halfProjSize, game.projectile.rect.y - halfProjSize, PARTICLE_EMITTER_LIFETIME, PROJ_COLOR);
@@ -381,9 +401,11 @@ fn game_reset(game: *Game, full: bool = true) void = {
 			target.rect.w = TARGET_WIDTH;
 			target.rect.h = TARGET_HEIGHT;
 			target.dead = false;
-			target.hsv.x = rowIndex * 30.0;
-			target.hsv.y = 0.9;
-			target.hsv.z = 0.8;
+
+			target.rigidity = random_target_rigidity();
+			target.color = color_from_hsv(rowIndex * 30.0, 0.9, 1.0);
+			target.color.a = (255.0 - (TARGET_RIGIDITY_FACTOR * (target.rigidity:int):f32)):u8;
+
 			index += 1;
 		};
 	};
@@ -479,8 +501,7 @@ fn update_and_render(game: *Game, input: *Game_Input) void = {
 
 	for (let target &.. targets) {
 		if (!target.dead) {
-			let color = color_from_hsv_vector(target.hsv);
-			draw_rectangle_rec(target.rect,  color);
+			draw_rectangle_rec(target.rect,  target.color);
 		};
 	};
 
