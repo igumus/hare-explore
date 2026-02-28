@@ -12,6 +12,12 @@ export type Vec2 = struct {
 	y: f32,
 };
 
+export type Vec3 = struct {
+	x: f32,
+	y: f32,
+	z: f32,
+};
+
 export type Rectangle = struct {
 	x: f32,
 	y: f32,
@@ -42,6 +48,9 @@ export @symbol("EndBlendMode") fn end_blending_mode() void;
 export @symbol("GetColor") fn get_color(color: int) Color;
 export @symbol("ClearBackground") fn clear_background(color: Color) void;
 export @symbol("ColorFromHSV") fn color_from_hsv(h: f32, s: f32, v: f32) Color;
+export fn color_from_hsv_vector(in: Vec3) Color = {
+	return color_from_hsv(in.x, in.y, in.z); 
+};
 
 export @symbol("DrawCircle") fn draw_circle(cx: int, cy: int, r: f32, c: Color) void;
 export @symbol("DrawRectangle") fn draw_rectangle(x: int, y: int, w: int, h: int, c: Color) void;
