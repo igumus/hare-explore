@@ -40,6 +40,14 @@ export @symbol("IsKeyDown") fn is_key_down(key: int) bool;
 export @symbol("GetFrameTime") fn get_frame_time() f32;
 export @symbol("GetTime") fn get_time() f64;
 
+// Cursor-related functions
+export @symbol("ShowCursor") fn cursor_show() void; // Shows cursor
+export @symbol("HideCursor") fn cursor_hide() void; // Hides cursor
+export @symbol("IsCursorHidden") fn cursor_hidden() bool; // Check if cursor is not visible
+export @symbol("EnableCursor") fn cursor_enable() void;   // Enables cursor (unlock cursor)
+export @symbol("DisableCursor") fn cursor_disable() void; // Disables cursor (lock cursor)
+export @symbol("IsCursorOnScreen") fn cursor_is_on_screen() bool; // Check if cursor is on the screen
+
 // NOTE: Drawing Functions
 export @symbol("BeginDrawing") fn begin_drawing() void;
 export @symbol("EndDrawing") fn end_drawing() void;

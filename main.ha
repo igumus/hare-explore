@@ -546,6 +546,8 @@ export fn main() void = {
 	defer close_window();
 	let quit: bool = false;
 
+	cursor_hide();
+
 	let game = Game {...};
 	game_reset(&game);
 
