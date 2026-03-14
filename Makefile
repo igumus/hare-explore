@@ -3,9 +3,9 @@
 all: build
 
 build: clean
-	mkdir -p build
-	hare build -L. -lraylib -lm -o build/main main.ha
+	mkdir -p bin
+	hare build -L. -lraylib -lm -o bin/main main.ha
 
 clean:
-	rm -rf build
+	rm -rf bin
 
