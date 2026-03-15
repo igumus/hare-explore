@@ -39,6 +39,7 @@ export @symbol("IsKeyPressed") fn is_key_pressed(key: int) bool;
 export @symbol("IsKeyDown") fn is_key_down(key: int) bool;
 export @symbol("GetFrameTime") fn get_frame_time() f32;
 export @symbol("GetTime") fn get_time() f64;
+export @symbol("SetTargetFPS") fn set_target_fps(fps: int) void;
 
 // Cursor-related functions
 export @symbol("ShowCursor") fn cursor_show() void; // Shows cursor

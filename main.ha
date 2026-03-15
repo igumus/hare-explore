@@ -542,10 +542,12 @@ fn update_and_render(game: *Game, input: *Game_Input) void = {
 };
 
 export fn main() void = {
-	init_window(WINDOW_WIDTH: size, WINDOW_HEIGHT: size, "Breaking Hare");
-	defer close_window();
 	let quit: bool = false;
 
+	init_window(WINDOW_WIDTH: size, WINDOW_HEIGHT: size, "Breaking Hare");
+	defer close_window();
+
+	set_target_fps(60);
 	cursor_hide();
 
 	let game = Game {...};
