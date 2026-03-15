@@ -512,6 +512,7 @@ fn update_and_render(game: *Game, input: *Game_Input) void = {
 		};
 	};
 
+
 	if (game.state == Game_State::GAMEOVER) {
 		draw_text_at_center("Game Over",TEXT_FONT_SIZE * 2);
 	};
@@ -520,9 +521,9 @@ fn update_and_render(game: *Game, input: *Game_Input) void = {
 		draw_text_at_center("Press SPACE to restart game", TEXT_FONT_SIZE * 2);
 	};
 
+	const buffer:[128]u8 = [0...];
 	const text_y = SCORE_PADDING_TOP + TEXT_HEIGHT;
-	const score_text = fmt::asprintf("Score: {:.3}", game.score)!;
-	defer free(score_text);
+	const score_text = fmt::bsprintf(buffer[0..],"Score: {:.3}", game.score)!;
 	draw_text(score_text, SCORE_PADDING_LEFT:size,text_y:size, TEXT_FONT_SIZE, TEXT_COLOR);
 
 	let i = 0i;
