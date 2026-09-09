@@ -2,7 +2,7 @@
 
 A small game experiment written in **Hare**.
 
-This project is my **first attempt at game programming**. The main goal is to explore **basic game mechanics** while learning and experimenting with the **Hare programming language**.
+The main goal is to explore and experimenting the **Hare programming language**.
 
 ## About the Project
 
